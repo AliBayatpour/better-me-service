@@ -4,6 +4,7 @@ import better_me_service.better_me.user.domain.model.User;
 import better_me_service.better_me.user.domain.repository.UserRepository;
 import org.springframework.stereotype.Repository;
 
+import javax.swing.text.html.Option;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -19,6 +20,10 @@ public class UserRepositoryImpl implements UserRepository {
     public Optional<User> findById(UUID id) {
         return jpaUserRepository.findById(id)
                 .map(this::toDomain);
+    }
+
+    public Optional<UserEntity> findUserEntityById(UUID id) {
+        return jpaUserRepository.findById(id);
     }
 
     public Optional<UserEntity> findEntityById(UUID id) {

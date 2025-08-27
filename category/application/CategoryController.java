@@ -1,15 +1,17 @@
 package better_me_service.better_me.category.application;
 
+import better_me_service.better_me.category.domain.model.Category;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.Optional;
 
-@RestController("/api/categories")
+@RestController
+@RequestMapping("/api/categories")
 public class CategoryController {
     private final CategoryService categoryService;
 
@@ -19,15 +21,41 @@ public class CategoryController {
 
     @GetMapping("/{id}")
     public ResponseEntity<CategoryResponse> getCategory(@PathVariable UUID id) {
-       return categoryService.findById(id)
-               .map(category -> ResponseEntity.ok(new CategoryResponse(category)))
-               .orElse(ResponseEntity.notFound().build());
+        Optional<Category> categoryOptional = categoryService.findById(id);
+        return categoryOptional.map(category -> ResponseEntity.ok(new CategoryResponse(category))).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @GetMapping()
-    public ResponseEntity<List<CategoryResponse>> getCategoryByUserId(@RequestParam UUID userId) {
-        return categoryService.findByUserId(userId)
-                .map(category -> ResponseEntity.ok(new CategoryResponse(category)))
-                .orElse(ResponseEntity.notFound().build());
+    @GetMapping
+    public ResponseEntity<List<CategoryResponse>> getCategoriesByUserId(@RequestParam UUID userId) {
+        List<Category> categories = categoryService.findAllByUser(userId);
+        return ResponseEntity.ok(categories.stream()
+                .map(CategoryResponse::new)
+                .toList());
+    }
+
+    @PostMapping
+    public ResponseEntity<CategoryResponse> saveCategory(@RequestBody CategoryRequest categoryRequest) {
+        Category category = new Category(null, categoryRequest.getName(), categoryRequest.getColor(), categoryRequest.getUserId());
+        Category savedCategory = categoryService.save(category);
+        return new ResponseEntity<>(new CategoryResponse(savedCategory), HttpStatus.CREATED);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<CategoryResponse> updateCategory(@PathVariable UUID id, @RequestBody CategoryRequest categoryRequest) {
+        Category categoryToUpdate = new Category(id, categoryRequest.getName(), categoryRequest.getColor(), categoryRequest.getUserId());
+        try {
+            Category updatedCategory = categoryService.update(categoryToUpdate);
+            return ResponseEntity.ok(new CategoryResponse(updatedCategory));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteCategory(@PathVariable UUID id) {
+        categoryService.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 }

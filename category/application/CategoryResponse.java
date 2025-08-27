@@ -1,10 +1,11 @@
 package better_me_service.better_me.category.application;
 
 import better_me_service.better_me.category.domain.model.Category;
-import lombok.Data;
+import lombok.Value;
+
 import java.util.UUID;
 
-@Data
+@Value
 public class CategoryResponse {
     private final UUID id;
     private final String name;

@@ -8,17 +8,16 @@ import better_me_service.better_me.user.infrastructure.persistence.UserRepositor
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 @Repository
 public class CategoryRepositoryImpl implements CategoryRepository {
     private final JpaCategoryRepository jpaCategoryRepository;
-    private final UserRepositoryImpl userRepositoryImpl;
 
-    public CategoryRepositoryImpl(JpaCategoryRepository jpaCategoryRepository, UserRepositoryImpl userRepositoryImpl) {
+    public CategoryRepositoryImpl(JpaCategoryRepository jpaCategoryRepository) {
         this.jpaCategoryRepository = jpaCategoryRepository;
-        this.userRepositoryImpl = userRepositoryImpl;
     }
 
     @Override
@@ -28,11 +27,15 @@ public class CategoryRepositoryImpl implements CategoryRepository {
     }
 
     @Override
-    public Optional<java.util.List<Category>> findAllByUser(UserEntity userEntity) {
-        return jpaCategoryRepository.findAllByUser(userEntity)
-                .map(categoryEntities -> categoryEntities.stream()
-                        .map(this::toDomain)
-                        .toList());
+    public List<Category> findAllByUser(User user) {
+        // Assume User domain model has a getId() method
+        UserEntity userEntity = new UserEntity();
+        userEntity.setId(user.getId());
+
+        List<CategoryEntity> categoryEntities = jpaCategoryRepository.findAllByUser(userEntity);
+        return categoryEntities.stream()
+                .map(this::toDomain)
+                .toList();
     }
 
     @Override
@@ -44,9 +47,6 @@ public class CategoryRepositoryImpl implements CategoryRepository {
 
     @Override
     public Category update(Category category) {
-        if (category.getId() == null) {
-            throw new IllegalArgumentException("Category ID cannot be null for update.");
-        }
         CategoryEntity entity = toEntity(category);
         CategoryEntity updatedEntity = jpaCategoryRepository.save(entity);
         return toDomain(updatedEntity);
@@ -55,6 +55,11 @@ public class CategoryRepositoryImpl implements CategoryRepository {
     @Override
     public void deleteById(UUID id) {
         jpaCategoryRepository.deleteById(id);
+    }
+
+    @Override
+    public boolean existsById(UUID id) {
+        return jpaCategoryRepository.existsById(id);
     }
 
     public Category toDomain(CategoryEntity entity) {
@@ -71,9 +76,8 @@ public class CategoryRepositoryImpl implements CategoryRepository {
         entity.setId(category.getId());
         entity.setName(category.getName());
         entity.setColor(category.getColor());
-        UserEntity userEntity = userRepositoryImpl.findEntityById(category.getUserId())
-                .orElseThrow(() -> new EntityNotFoundException("User not found with ID: " + category.getUserId()));
-
+        UserEntity userEntity = new UserEntity();
+        userEntity.setId(category.getUserId());
         entity.setUser(userEntity);
         return entity;
     }

@@ -1,16 +1,19 @@
 package better_me_service.better_me.category.application;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import lombok.Value;
 
 import java.util.UUID;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
+@Value
 public class CategoryRequest {
-    private String name;
-    private String color;
-    private UUID userId;
+    @NotBlank(message = "Name cannot be blank")
+    String name;
+
+    @NotBlank(message = "Color cannot be blank")
+    String color;
+
+    @NotNull(message = "User ID cannot be null")
+    UUID userId;
 }
