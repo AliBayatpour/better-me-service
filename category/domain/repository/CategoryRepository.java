@@ -2,7 +2,6 @@ package better_me_service.better_me.category.domain.repository;
 
 import better_me_service.better_me.category.domain.model.Category;
 import better_me_service.better_me.user.domain.model.User;
-import better_me_service.better_me.user.infrastructure.persistence.UserEntity;
 
 import java.util.List;
 import java.util.Optional;
@@ -15,5 +14,4 @@ public interface CategoryRepository {
     Category update(Category category);
     void deleteById(UUID id);
     boolean existsById(UUID id);
-
 }

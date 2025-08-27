@@ -3,8 +3,8 @@ package better_me_service.better_me.category.infrastructure.persistence;
 import better_me_service.better_me.category.domain.model.Category;
 import better_me_service.better_me.category.domain.repository.CategoryRepository;
 import better_me_service.better_me.user.domain.model.User;
+import better_me_service.better_me.user.infrastructure.persistence.JpaUserRepository;
 import better_me_service.better_me.user.infrastructure.persistence.UserEntity;
-import better_me_service.better_me.user.infrastructure.persistence.UserRepositoryImpl;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Repository;
 
@@ -15,8 +15,10 @@ import java.util.UUID;
 @Repository
 public class CategoryRepositoryImpl implements CategoryRepository {
     private final JpaCategoryRepository jpaCategoryRepository;
+    private final JpaUserRepository jpaUserRepository;
 
-    public CategoryRepositoryImpl(JpaCategoryRepository jpaCategoryRepository) {
+    public CategoryRepositoryImpl(JpaCategoryRepository jpaCategoryRepository, JpaUserRepository jpaUserRepository) {
+        this.jpaUserRepository = jpaUserRepository;
         this.jpaCategoryRepository = jpaCategoryRepository;
     }
 
@@ -28,7 +30,6 @@ public class CategoryRepositoryImpl implements CategoryRepository {
 
     @Override
     public List<Category> findAllByUser(User user) {
-        // Assume User domain model has a getId() method
         UserEntity userEntity = new UserEntity();
         userEntity.setId(user.getId());
 
@@ -72,12 +73,13 @@ public class CategoryRepositoryImpl implements CategoryRepository {
     }
 
     private CategoryEntity toEntity(Category category) {
+        UserEntity userEntity = jpaUserRepository.findById(category.getUserId())
+                .orElseThrow(() -> new EntityNotFoundException("User not found with ID: " + category.getUserId()));
+
         CategoryEntity entity = new CategoryEntity();
         entity.setId(category.getId());
         entity.setName(category.getName());
         entity.setColor(category.getColor());
-        UserEntity userEntity = new UserEntity();
-        userEntity.setId(category.getUserId());
         entity.setUser(userEntity);
         return entity;
     }
