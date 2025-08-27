@@ -1,16 +1,12 @@
 package better_me_service.better_me.user.domain.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.UUID;
 
 @Getter
-@Setter
 @AllArgsConstructor
-@NoArgsConstructor
+@With
 public class User {
     private  UUID id;
     private String name;

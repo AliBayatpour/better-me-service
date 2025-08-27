@@ -18,9 +18,9 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public User createUser(User user) {
-        String hashedPassword = passwordEncoder.encode(user.getPassword());
-        user.setPassword(hashedPassword);
+    public User createUser(UserRequest userRequest) {
+        String hashedPassword = passwordEncoder.encode(userRequest.password());
+        User user = new User(null, userRequest.name(), userRequest.email(), hashedPassword);
         return userRepository.save(user);
     }
 
