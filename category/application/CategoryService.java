@@ -29,21 +29,28 @@ public class CategoryService {
                 .orElse(List.of());
     }
 
-    public Category save(Category category) {
+    public Category save(CategoryRequest categoryRequest) {
+        Category category = new Category(
+                null,
+                categoryRequest.name(),
+                categoryRequest.color(),
+                categoryRequest.userId()
+        );
         return categoryRepository.save(category);
+    }
+
+    public Category update(UUID id, CategoryRequest categoryRequest) {
+        Category existingCategory = categoryRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Category not found with id: " + id));
+
+        Category updatedCategory = existingCategory
+                .withName(categoryRequest.name())
+                .withColor(categoryRequest.color());
+
+        return categoryRepository.save(updatedCategory);
     }
 
     public void deleteById(UUID id) {
         categoryRepository.deleteById(id);
-    }
-
-    public Category update(Category category) {
-        if (category.getId() == null) {
-            throw new IllegalArgumentException("Category ID cannot be null for update.");
-        }
-        if (!categoryRepository.existsById(category.getId())) {
-            throw new RuntimeException("Category not found with id: " + category.getId());
-        }
-        return categoryRepository.update(category);
     }
 }

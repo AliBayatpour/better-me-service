@@ -29,6 +29,6 @@ public class UserService {
     }
 
     public void deleteUser(UUID id) {
-       userRepository.findById(id).ifPresent(user -> userRepository.deleteById(id));
+        userRepository.deleteById(id);
     }
 }

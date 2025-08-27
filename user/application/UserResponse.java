@@ -1,15 +1,15 @@
 package better_me_service.better_me.user.application;
 
 import better_me_service.better_me.user.domain.model.User;
-import lombok.Data;
+import lombok.Value;
 
 import java.util.UUID;
 
-@Data
+@Value
 public class UserResponse {
-    private final UUID id;
-    private final String name;
-    private final String email;
+     UUID id;
+     String name;
+     String email;
 
     public UserResponse(User user) {
         this.id = user.getId();

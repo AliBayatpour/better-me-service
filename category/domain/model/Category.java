@@ -1,16 +1,12 @@
 package better_me_service.better_me.category.domain.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.UUID;
 
 @Getter
-@Setter
 @AllArgsConstructor
-@NoArgsConstructor
+@With
 public class Category {
     private UUID id;
     private String name;

@@ -4,7 +4,6 @@ import better_me_service.better_me.category.domain.model.Category;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.UUID;
@@ -22,7 +21,8 @@ public class CategoryController {
     @GetMapping("/{id}")
     public ResponseEntity<CategoryResponse> getCategory(@PathVariable UUID id) {
         Optional<Category> categoryOptional = categoryService.findById(id);
-        return categoryOptional.map(category -> ResponseEntity.ok(new CategoryResponse(category))).orElseGet(() -> ResponseEntity.notFound().build());
+        return categoryOptional.map(category -> ResponseEntity.ok(new CategoryResponse(category)))
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @GetMapping
@@ -35,16 +35,14 @@ public class CategoryController {
 
     @PostMapping
     public ResponseEntity<CategoryResponse> saveCategory(@RequestBody CategoryRequest categoryRequest) {
-        Category category = new Category(null, categoryRequest.getName(), categoryRequest.getColor(), categoryRequest.getUserId());
-        Category savedCategory = categoryService.save(category);
+        Category savedCategory = categoryService.save(categoryRequest);
         return new ResponseEntity<>(new CategoryResponse(savedCategory), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<CategoryResponse> updateCategory(@PathVariable UUID id, @RequestBody CategoryRequest categoryRequest) {
-        Category categoryToUpdate = new Category(id, categoryRequest.getName(), categoryRequest.getColor(), categoryRequest.getUserId());
         try {
-            Category updatedCategory = categoryService.update(categoryToUpdate);
+            Category updatedCategory = categoryService.update(id, categoryRequest);
             return ResponseEntity.ok(new CategoryResponse(updatedCategory));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
@@ -52,6 +50,7 @@ public class CategoryController {
             return ResponseEntity.notFound().build();
         }
     }
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCategory(@PathVariable UUID id) {

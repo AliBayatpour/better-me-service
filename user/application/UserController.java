@@ -1,9 +1,11 @@
 package better_me_service.better_me.user.application;
 
 import better_me_service.better_me.user.domain.model.User;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -17,16 +19,16 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<UserResponse> createUser(@RequestBody UserRequest userRequest) {
-        User user = new User(UUID.randomUUID(), userRequest.getName(), userRequest.getEmail(), userRequest.getPassword());
+        User user = new User(null, userRequest.name(), userRequest.email(), userRequest.password());
         User createdUser = userService.createUser(user);
-        return ResponseEntity.ok(new UserResponse(createdUser));
+        return new ResponseEntity<>(new UserResponse(createdUser), HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
     public  ResponseEntity<UserResponse> getUser(@PathVariable UUID id) {
-        return userService.getUserById(id)
-                .map(user -> ResponseEntity.ok(new UserResponse(user)))
-                .orElse(ResponseEntity.notFound().build());
+        Optional<User> userOptional = userService.getUserById(id);
+        return userOptional.map(user -> ResponseEntity.ok(new UserResponse(user)))
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")

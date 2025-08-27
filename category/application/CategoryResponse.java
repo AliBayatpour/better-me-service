@@ -7,10 +7,10 @@ import java.util.UUID;
 
 @Value
 public class CategoryResponse {
-    private final UUID id;
-    private final String name;
-    private final String color;
-    private final UUID userId;
+    UUID id;
+    String name;
+    String color;
+    UUID userId;
 
     public CategoryResponse(Category category) {
         this.id = category.getId();
