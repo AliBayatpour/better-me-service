@@ -47,20 +47,8 @@ public class CategoryRepositoryImpl implements CategoryRepository {
     }
 
     @Override
-    public Category update(Category category) {
-        CategoryEntity entity = toEntity(category);
-        CategoryEntity updatedEntity = jpaCategoryRepository.save(entity);
-        return toDomain(updatedEntity);
-    }
-
-    @Override
     public void deleteById(UUID id) {
         jpaCategoryRepository.deleteById(id);
-    }
-
-    @Override
-    public boolean existsById(UUID id) {
-        return jpaCategoryRepository.existsById(id);
     }
 
     public Category toDomain(CategoryEntity entity) {

@@ -36,16 +36,6 @@ public class TimerItemRepositoryImpl implements TimerItemRepository {
     }
 
     @Override
-    public TimerItem update(TimerItem timerItem) {
-        if (timerItem.getId() == null) {
-            throw new IllegalArgumentException("TimerItem ID cannot be null for update.");
-        }
-        TimerItemEntity entity = toEntity(timerItem);
-        TimerItemEntity updatedEntity = jpaTimerItemRepository.save(entity);
-        return toDomain(updatedEntity);
-    }
-
-    @Override
     public void deleteById(UUID id) {
         jpaTimerItemRepository.deleteById(id);
     }

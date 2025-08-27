@@ -4,6 +4,8 @@ import better_me_service.better_me.category.infrastructure.persistence.CategoryE
 import better_me_service.better_me.user.infrastructure.persistence.UserEntity;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.Instant;
 import java.time.OffsetDateTime;
@@ -11,7 +13,8 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "timer_items")
-@Data
+@Getter
+@Setter
 public class TimerItemEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -47,5 +50,16 @@ public class TimerItemEntity {
     private Integer goal;
 
     private Integer progress;
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = Instant.now();
+        this.updatedAt = Instant.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = Instant.now();
+    }
 
 }
