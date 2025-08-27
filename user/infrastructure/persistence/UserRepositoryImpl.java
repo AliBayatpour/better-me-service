@@ -22,10 +22,6 @@ public class UserRepositoryImpl implements UserRepository {
                 .map(this::toDomain);
     }
 
-    public Optional<UserEntity> findUserEntityById(UUID id) {
-        return jpaUserRepository.findById(id);
-    }
-
     public Optional<UserEntity> findEntityById(UUID id) {
         return jpaUserRepository.findById(id);
     }

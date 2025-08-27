@@ -1,17 +1,13 @@
 package better_me_service.better_me.timerItem.domain.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @Getter
-@Setter
 @AllArgsConstructor
-@NoArgsConstructor
+@With
 public class TimerItem {
     private UUID id;
     private UUID userId;
