@@ -29,14 +29,11 @@ public class CategoryRepositoryImpl implements CategoryRepository {
     }
 
     @Override
-    public List<Category> findAllByUser(User user) {
-        UserEntity userEntity = new UserEntity();
-        userEntity.setId(user.getId());
+    public List<Category> findAllByUserId(UUID userId) {
+        UserEntity userEntity = jpaUserRepository.getReferenceById(userId);
 
         List<CategoryEntity> categoryEntities = jpaCategoryRepository.findAllByUser(userEntity);
-        return categoryEntities.stream()
-                .map(this::toDomain)
-                .toList();
+        return categoryEntities.stream().map(this::toDomain).toList();
     }
 
     @Override

@@ -12,11 +12,8 @@ import java.util.UUID;
 @Service
 public class CategoryService {
     private final CategoryRepository categoryRepository;
-    private final UserRepository userRepository;
-
-    public CategoryService(CategoryRepository categoryRepository, UserRepository userRepository) {
+    public CategoryService(CategoryRepository categoryRepository) {
         this.categoryRepository = categoryRepository;
-        this.userRepository = userRepository;
     }
 
     public Optional<Category> findById(UUID id) {
@@ -24,9 +21,7 @@ public class CategoryService {
     }
 
     public List<Category> findAllByUser(UUID userId) {
-        return userRepository.findById(userId)
-                .map(categoryRepository::findAllByUser)
-                .orElse(List.of());
+        return categoryRepository.findAllByUserId(userId);
     }
 
     public Category save(CategoryRequest categoryRequest) {
