@@ -5,7 +5,6 @@ import better_me_service.better_me.timerItem.domain.repository.TimerItemReposito
 
 import better_me_service.better_me.user.infrastructure.persistence.JpaUserRepository;
 import better_me_service.better_me.user.infrastructure.persistence.UserEntity;
-import better_me_service.better_me.user.infrastructure.persistence.UserRepositoryImpl;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Repository;
 
@@ -18,7 +17,7 @@ public class TimerItemRepositoryImpl implements TimerItemRepository {
     private final JpaTimerItemRepository jpaTimerItemRepository;
     private final JpaUserRepository jpaUserRepository;
 
-    public TimerItemRepositoryImpl(JpaTimerItemRepository jpaTimerItemRepository, UserRepositoryImpl userRepositoryImpl, JpaUserRepository jpaUserRepository) {
+    public TimerItemRepositoryImpl(JpaTimerItemRepository jpaTimerItemRepository, JpaUserRepository jpaUserRepository) {
         this.jpaTimerItemRepository = jpaTimerItemRepository;
         this.jpaUserRepository = jpaUserRepository;
     }
