@@ -28,8 +28,7 @@ public class TimerItemHistoryRepositoryImpl implements TimerItemHistoryRepositor
 
     @Override
     public Optional<TimerItemHistory> findById(UUID id) {
-        return jpaTimerItemHistoryRepository.findById(id)
-                .map(this::toDomain);
+        return jpaTimerItemHistoryRepository.findById(id).map(this::toDomain);
     }
 
     @Override
@@ -52,24 +51,13 @@ public class TimerItemHistoryRepositoryImpl implements TimerItemHistoryRepositor
     }
 
     public TimerItemHistory toDomain(TimerItemHistoryEntity entity) {
-        return new TimerItemHistory(
-                entity.getId(),
-                entity.getUser().getId(),
-                entity.getCategory() != null ? entity.getCategory().getId() : null, // Handle potential null category
-                entity.getDescription(),
-                entity.getFinishedAt(),
-                entity.getSort(),
-                entity.getDone(),
-                entity.getGoal(),
-                entity.getProgress()
-        );
+        return new TimerItemHistory(entity.getId(), entity.getUser().getId(), entity.getCategory() != null ? entity.getCategory().getId() : null, // Handle potential null category
+                entity.getDescription(), entity.getFinishedAt(), entity.getSort(), entity.getDone(), entity.getGoal(), entity.getProgress());
     }
 
     private TimerItemHistoryEntity toEntity(TimerItemHistory timerItem) {
-        UserEntity userEntity = jpaUserRepository.findById(timerItem.getUserId())
-                .orElseThrow(() -> new EntityNotFoundException("User not found with ID: " + timerItem.getUserId()));
-        CategoryEntity categoryEntity = jpaCategoryRepository.findById(timerItem.getCategoryId())
-                .orElseThrow(() -> new EntityNotFoundException("User not found with ID: " + timerItem.getUserId()));
+        UserEntity userEntity = jpaUserRepository.findById(timerItem.getUserId()).orElseThrow(() -> new EntityNotFoundException("User not found with ID: " + timerItem.getUserId()));
+        CategoryEntity categoryEntity = jpaCategoryRepository.findById(timerItem.getCategoryId()).orElseThrow(() -> new EntityNotFoundException("User not found with ID: " + timerItem.getUserId()));
         TimerItemHistoryEntity entity = new TimerItemHistoryEntity();
         entity.setId(timerItem.getId());
         entity.setDescription(timerItem.getDescription());
