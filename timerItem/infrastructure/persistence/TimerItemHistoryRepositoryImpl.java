@@ -3,8 +3,8 @@ package better_me_service.better_me.timerItem.infrastructure.persistence;
 import better_me_service.better_me.category.infrastructure.persistence.CategoryEntity;
 import better_me_service.better_me.category.infrastructure.persistence.JpaCategoryRepository;
 import better_me_service.better_me.timerItem.domain.model.TimerItem;
-import better_me_service.better_me.timerItem.domain.repository.TimerItemRepository;
-
+import better_me_service.better_me.timerItem.domain.model.TimerItemHistory;
+import better_me_service.better_me.timerItem.domain.repository.TimerItemHistoryRepository;
 import better_me_service.better_me.user.infrastructure.persistence.JpaUserRepository;
 import better_me_service.better_me.user.infrastructure.persistence.UserEntity;
 import jakarta.persistence.EntityNotFoundException;
@@ -15,47 +15,47 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public class TimerItemRepositoryImpl implements TimerItemRepository {
-    private final JpaTimerItemRepository jpaTimerItemRepository;
+public class TimerItemHistoryRepositoryImpl implements TimerItemHistoryRepository {
+    private final JpaTimerItemHistoryRepository jpaTimerItemHistoryRepository;
     private final JpaUserRepository jpaUserRepository;
     private final JpaCategoryRepository jpaCategoryRepository;
 
-    public TimerItemRepositoryImpl(JpaTimerItemRepository jpaTimerItemRepository, JpaUserRepository jpaUserRepository, JpaCategoryRepository jpaCategoryRepository) {
-        this.jpaTimerItemRepository = jpaTimerItemRepository;
+    public TimerItemHistoryRepositoryImpl(JpaTimerItemHistoryRepository jpaTimerItemHistoryRepository, JpaUserRepository jpaUserRepository, JpaCategoryRepository jpaCategoryRepository) {
+        this.jpaTimerItemHistoryRepository = jpaTimerItemHistoryRepository;
         this.jpaUserRepository = jpaUserRepository;
         this.jpaCategoryRepository = jpaCategoryRepository;
     }
 
     @Override
-    public Optional<TimerItem> findById(UUID id) {
-        return jpaTimerItemRepository.findById(id)
+    public Optional<TimerItemHistory> findById(UUID id) {
+        return jpaTimerItemHistoryRepository.findById(id)
                 .map(this::toDomain);
     }
 
     @Override
-    public List<TimerItem> findAllByUserId(UUID userId) {
+    public List<TimerItemHistory> findAllByUserId(UUID userId) {
         UserEntity userEntity = jpaUserRepository.getReferenceById(userId);
-        List<TimerItemEntity> timerItemEntities = jpaTimerItemRepository.findAllByUser(userEntity);
-        return timerItemEntities.stream().map(this::toDomain).toList();
+        List<TimerItemHistoryEntity> timerItemHistoryEntities = jpaTimerItemHistoryRepository.findAllByUser(userEntity);
+        return timerItemHistoryEntities.stream().map(this::toDomain).toList();
     }
 
     @Override
-    public TimerItem save(TimerItem timerItem) {
-        TimerItemEntity entity = toEntity(timerItem);
-        TimerItemEntity savedEntity = jpaTimerItemRepository.save(entity);
+    public TimerItemHistory save(TimerItemHistory timerItem) {
+        TimerItemHistoryEntity entity = toEntity(timerItem);
+        TimerItemHistoryEntity savedEntity = jpaTimerItemHistoryRepository.save(entity);
         return toDomain(savedEntity);
     }
 
     @Override
     public void deleteById(UUID id) {
-        jpaTimerItemRepository.deleteById(id);
+        jpaTimerItemHistoryRepository.deleteById(id);
     }
 
-    public TimerItem toDomain(TimerItemEntity entity) {
-        return new TimerItem(
+    public TimerItemHistory toDomain(TimerItemHistoryEntity entity) {
+        return new TimerItemHistory(
                 entity.getId(),
                 entity.getUser().getId(),
-                entity.getCategory().getId(),
+                entity.getCategory() != null ? entity.getCategory().getId() : null, // Handle potential null category
                 entity.getDescription(),
                 entity.getFinishedAt(),
                 entity.getSort(),
@@ -65,12 +65,12 @@ public class TimerItemRepositoryImpl implements TimerItemRepository {
         );
     }
 
-    private TimerItemEntity toEntity(TimerItem timerItem) {
+    private TimerItemHistoryEntity toEntity(TimerItemHistory timerItem) {
         UserEntity userEntity = jpaUserRepository.findById(timerItem.getUserId())
                 .orElseThrow(() -> new EntityNotFoundException("User not found with ID: " + timerItem.getUserId()));
         CategoryEntity categoryEntity = jpaCategoryRepository.findById(timerItem.getCategoryId())
                 .orElseThrow(() -> new EntityNotFoundException("User not found with ID: " + timerItem.getUserId()));
-        TimerItemEntity entity = new TimerItemEntity();
+        TimerItemHistoryEntity entity = new TimerItemHistoryEntity();
         entity.setId(timerItem.getId());
         entity.setDescription(timerItem.getDescription());
         entity.setFinishedAt(timerItem.getFinishedAt());
